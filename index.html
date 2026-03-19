@@ -1,135 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>NovaTasks</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reminders Clone</title>
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #111111;
+      --muted: #6e6e73;
+      --line: #e5e5ea;
+      --blue: #007aff;
+      --blue-soft: #eaf3ff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+    }
 
-<style>
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont;
-    background: #f2f2f7;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-.container {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-}
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, #f7f7fb 30%, #f2f2f7 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-h1 {
-    font-size: 32px;
-    margin-bottom: 5px;
-}
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+    }
 
-.subtitle {
-    color: #6e6e73;
-    margin-bottom: 20px;
-}
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
 
-.card {
-    background: white;
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-}
+    .title-wrap h1 {
+      font-size: 2.2rem;
+      line-height: 1.05;
+      margin: 0;
+      font-weight: 750;
+      letter-spacing: -0.04em;
+    }
 
-input {
-    width: 75%;
-    padding: 10px;
-    border: none;
-    background: #f9f9fb;
-    border-radius: 10px;
-    font-size: 16px;
-}
+    .title-wrap .date {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
 
-button {
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-}
+    .count-badge {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
 
-.add {
-    background: #007aff;
-    color: white;
-}
+    .list-card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
 
-.delete {
-    background: #ff3b30;
-    color: white;
-    width: 100%;
-    margin-top: 10px;
-}
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.65);
+    }
 
-li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-</style>
+    .input-wrap {
+      flex: 1;
+      background: #f8f8fb;
+      border: 1px solid #ececf1;
+      border-radius: 14px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      min-height: 50px;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .input-wrap input::placeholder {
+      color: #9a9aa1;
+    }
+
+    .add-btn {
+      border: none;
+      background: var(--blue);
+      color: white;
+      height: 50px;
+      min-width: 50px;
+      border-radius: 14px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 18px rgba(0, 122, 255, 0.25);
+    }
+
+    .add-btn:hover {
+      opacity: 0.95;
+    }
+
+    .add-btn:active {
+      transform: scale(0.96);
+    }
+
+    .task-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      transition: background 0.15s ease;
+    }
+
+    .task:last-child {
+      border-bottom: none;
+    }
+
+    .task:hover {
+      background: rgba(0, 122, 255, 0.03);
+    }
+
+    .check-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      background: white;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.18s ease;
+    }
+
+    .task.completed .check-btn {
+      background: var(--blue);
+    }
+
+    .task.completed .check-btn::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .task-text {
+      flex: 1;
+      font-size: 1rem;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .task.completed .task-text {
+      color: #9a9aa1;
+      text-decoration: line-through;
+    }
+
+    .delete-btn {
+      border: none;
+      background: transparent;
+      color: #c7c7cc;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .delete-btn:hover {
+      background: #fff0f0;
+      color: #ff3b30;
+    }
+
+    .empty-state {
+      padding: 34px 20px 40px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state .emoji {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 0.96rem;
+      line-height: 1.4;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        padding: 22px 12px 28px;
+      }
+
+      .title-wrap h1 {
+        font-size: 1.9rem;
+      }
+
+      .count-badge {
+        padding: 8px 12px;
+        font-size: 0.88rem;
+      }
+
+      .task,
+      .input-row {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-    <h1>Tasks</h1>
-    <div class="subtitle">Simple, clean, and focused</div>
-
-    <div class="card">
-        <input id="taskInput" placeholder="Add a task">
-        <button class="add" onclick="addTask()">+</button>
-
-        <ul id="list"></ul>
+  <main class="app">
+    <div class="topbar">
+      <div class="title-wrap">
+        <h1>Today</h1>
+        <div class="date" id="date"></div>
+      </div>
+      <div class="count-badge" id="countBadge">0 reminders</div>
     </div>
 
-    <button class="delete" onclick="deleteTask()">Delete Selected</button>
-</div>
+    <section class="list-card">
+      <div class="input-row">
+        <div class="input-wrap">
+          <input id="taskInput" type="text" placeholder="New Reminder" />
+        </div>
+        <button class="add-btn" onclick="addTask()">+</button>
+      </div>
 
-<script>
-let tasks = [];
-let selectedIndex = null;
+      <ul class="task-list" id="taskList"></ul>
 
-function addTask() {
-    let input = document.getElementById("taskInput");
-    let value = input.value;
+      <div class="empty-state" id="emptyState">
+        <div class="emoji">📝</div>
+        <h2>No reminders yet</h2>
+        <p>Add your first task to get started.</p>
+      </div>
+    </section>
 
-    if (value) {
-        tasks.push(value);
-        render();
-        input.value = "";
+    <div class="footer">Designed by Brittany Benjamin</div>
+  </main>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function updateDate() {
+      const d = new Date();
+      document.getElementById("date").textContent =
+        d.toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "long",
+          day: "numeric"
+        });
     }
-}
 
-function render() {
-    let list = document.getElementById("list");
-    list.innerHTML = "";
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
 
-    tasks.forEach((task, index) => {
-        let li = document.createElement("li");
-        li.textContent = task;
+    function updateCount() {
+      const total = tasks.length;
+      const remaining = tasks.filter(task => !task.done).length;
+      const text = total === 0
+        ? "0 reminders"
+        : `${remaining} of ${total} left`;
+      document.getElementById("countBadge").textContent = text;
+    }
 
-        li.onclick = () => {
-            selectedIndex = index;
-            render();
-        };
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      const value = input.value.trim();
 
-        if (index === selectedIndex) {
-            li.style.background = "#dbeafe";
-        }
+      if (!value) return;
 
-        list.appendChild(li);
+      tasks.unshift({
+        text: value,
+        done: false
+      });
+
+      input.value = "";
+      saveTasks();
+      render();
+    }
+
+    function toggleTask(index) {
+      tasks[index].done = !tasks[index].done;
+      saveTasks();
+      render();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      render();
+    }
+
+    function render() {
+      const taskList = document.getElementById("taskList");
+      const emptyState = document.getElementById("emptyState");
+
+      taskList.innerHTML = "";
+
+      if (tasks.length === 0) {
+        emptyState.style.display = "block";
+      } else {
+        emptyState.style.display = "none";
+      }
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = `task ${task.done ? "completed" : ""}`;
+
+        li.innerHTML = `
+          <button class="check-btn" onclick="toggleTask(${index})"></button>
+          <div class="task-text">${task.text}</div>
+          <button class="delete-btn" onclick="deleteTask(${index})">✕</button>
+        `;
+
+        taskList.appendChild(li);
+      });
+
+      updateCount();
+    }
+
+    document.getElementById("taskInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        addTask();
+      }
     });
-}
 
-function deleteTask() {
-    if (selectedIndex !== null) {
-        tasks.splice(selectedIndex, 1);
-        selectedIndex = null;
-        render();
-    }
-}
-</script>
-
+    updateDate();
+    render();
+  </script>
 </body>
 </html>
