@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NovaTasks</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont;
+    background: #f2f2f7;
+}
+
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #6e6e73;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+input {
+    width: 75%;
+    padding: 10px;
+    border: none;
+    background: #f9f9fb;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.add {
+    background: #007aff;
+    color: white;
+}
+
+.delete {
+    background: #ff3b30;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Tasks</h1>
+    <div class="subtitle">Simple, clean, and focused</div>
+
+    <div class="card">
+        <input id="taskInput" placeholder="Add a task">
+        <button class="add" onclick="addTask()">+</button>
+
+        <ul id="list"></ul>
+    </div>
+
+    <button class="delete" onclick="deleteTask()">Delete Selected</button>
+</div>
+
+<script>
+let tasks = [];
+let selectedIndex = null;
+
+function addTask() {
+    let input = document.getElementById("taskInput");
+    let value = input.value;
+
+    if (value) {
+        tasks.push(value);
+        render();
+        input.value = "";
+    }
+}
+
+function render() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+        li.textContent = task;
+
+        li.onclick = () => {
+            selectedIndex = index;
+            render();
+        };
+
+        if (index === selectedIndex) {
+            li.style.background = "#dbeafe";
+        }
+
+        list.appendChild(li);
+    });
+}
+
+function deleteTask() {
+    if (selectedIndex !== null) {
+        tasks.splice(selectedIndex, 1);
+        selectedIndex = null;
+        render();
+    }
+}
+</script>
+
+</body>
+</html>
